@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>Calculo de prestamos</title>
+  </head>
+  <body>
+    <h1>Calculo de prestamos</h1>
+    <p>Por favor ingrese los siguientes valores:</p>
+    <form id="form">
+      <input type="number" id="loan" placeholder="Valor del prestamo:" />
+      <input type="number" id="dues" placeholder="Cantidad de cuotas:" />
+      <input type="submit" value="Calcular" />
+    </form>
+    <hr />
+    <div id="tabla"></div>
+    <hr />
+    <div id="total"></div>
+    <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(function () {
+        $("#form").on("submit", function (e) {
+          e.preventDefault();
+          var loan = $("#loan").val();
+          var dues = $("#dues").val();
+          var requestData = { loan: Number(loan), dues: Number(dues) };
+          console.log("loan", loan);
+          console.log("dues", dues);
+          console.log("requestData", requestData);
+          $.ajax({
+            url: "http://localhost:3000/api/loans",
+            type: "POST",
+            data: requestData,
+            success: function (response) {
+              console.log("response: ", response);
+              let html = "<p>Cuotas</p><table>";
+              response.dues.forEach((due) => {
+                html += `<tr><td>${due.due}</td><td>${due.value}</td></tr>`;
+              });
+              html += "</table>";
+              $("#tabla").html(html);
+              $("#total").html("Total: " + response.total);
+            },
+            error: function (error) {
+              alert("Ocurrio un error por favor vea la consola");
+              console.error("Error: ", error);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
